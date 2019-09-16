@@ -1,0 +1,8 @@
+<litepal>
+    <dbname value="cards" />
+    <version value="1" />
+    <list>
+        <mapping class="com.vincent.threecard.dao.CardType" />
+    </list>
+    <storage value="internal" />
+</litepal>
