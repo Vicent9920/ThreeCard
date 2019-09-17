@@ -23,32 +23,66 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintHorizontal_bias="0.95"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintVertical_bias="0.0"/>
 
-    <LinearLayout
+    <TextView
+            android:id="@+id/tv_random"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal" android:layout_marginBottom="12dp"
-            app:layout_constraintBottom_toTopOf="@+id/textView2" app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" android:id="@+id/linearLayout">
+            android:padding="8dp"
+            android:text="随机选择"
+            android:textSize="16sp"
+            android:textColor="#8BC34A"
+            android:background="#dd000000"
+            android:layout_marginTop="14dp"
+            app:layout_constraintTop_toBottomOf="@+id/tv_choose"
+            app:layout_constraintEnd_toEndOf="@+id/tv_choose"/>
+
+    <TextView
+            android:id="@+id/tv_clean"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:text="清除牌型"
+            android:textSize="16sp"
+            android:textColor="#FFEB3B"
+            android:background="#dd000000"
+            app:layout_constraintEnd_toEndOf="@+id/tv_random"
+            android:layout_marginTop="14dp"
+            app:layout_constraintTop_toBottomOf="@+id/tv_random"/>
+
+    <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="12dp"
+            app:layout_constraintBottom_toTopOf="@+id/tv_result"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+    >
         <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:id="@+id/iv_first"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
                 android:src="@mipmap/default_card"/>
         <View android:layout_width="12dp" android:layout_height="1px"/>
         <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:id="@+id/iv_second"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
                 android:src="@mipmap/default_card"/>
         <View android:layout_width="12dp" android:layout_height="1px"/>
         <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:id="@+id/iv_third"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
                 android:src="@mipmap/default_card"/>
 
     </LinearLayout>
 
     <TextView
+            android:id="@+id/tv_result"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="6dp"
@@ -60,6 +94,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" android:id="@+id/textView2"/>
+            app:layout_constraintTop_toTopOf="parent"/>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

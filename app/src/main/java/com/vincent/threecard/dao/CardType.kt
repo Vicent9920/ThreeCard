@@ -12,8 +12,13 @@ import org.litepal.crud.LitePalSupport
  *
  */
 
-data class CardType(var a: Int, var b: Int, var c: Int, var level: Int? = 0): LitePalSupport() {
-    @Transient val id = 0
+data class CardType(
+    var a: Int, var b: Int, var c: Int, var type: Int? = 1,
+    var max: Int? = 2, var number: Int = 0
+) : LitePalSupport() {
+    @Transient
+    val id = 0
+
 
     // 将 1 换算为 A ，为目前的最大值
     init {
@@ -158,7 +163,7 @@ data class CardType(var a: Int, var b: Int, var c: Int, var level: Int? = 0): Li
      * 计算牌型的总牌值
      * 与<link getTotal()>的区别在于上面计算考虑花型，此处不考虑花型
      */
-    private fun getTotalCard(): Int {
+    fun getTotalCard(): Int {
         val a1 = getCardValue(a)
         val b1 = getCardValue(b)
         val c1 = getCardValue(c)
@@ -170,20 +175,19 @@ data class CardType(var a: Int, var b: Int, var c: Int, var level: Int? = 0): Li
     }
 
     private fun getCardName(value: Int): String {
-        val cardValue = getCardValue(value)
-        val number = when{
-            cardValue == 14 -> "A"
-            cardValue == 13 -> "K"
-            cardValue == 12 -> "Q"
-            cardValue == 11 -> "J"
+        val number = when (val cardValue = getCardValue(value)) {
+            14 -> "A"
+            13 -> "K"
+            12 -> "Q"
+            11 -> "J"
             else -> cardValue.toString()
         }
 
         return when (value % 4) {
-            3 -> "黑桃${number}"
-            2 -> "梅花${number}"
-            1 -> "方块${number}"
-            else -> "红桃${number}"
+            3 -> "黑桃$number"
+            2 -> "梅花$number"
+            1 -> "方块$number"
+            else -> "红桃$number"
         }
     }
 }

@@ -4,5 +4,5 @@
     <list>
         <mapping class="com.vincent.threecard.dao.CardType" />
     </list>
-    <storage value="internal" />
+    <storage value="external" />
 </litepal>

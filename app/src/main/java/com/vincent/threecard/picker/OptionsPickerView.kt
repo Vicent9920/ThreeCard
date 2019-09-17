@@ -11,7 +11,6 @@ import android.widget.TextView
 import com.bigkoo.pickerview.R
 import com.bigkoo.pickerview.configure.PickerOptions
 import com.bigkoo.pickerview.view.BasePickerView
-import com.bigkoo.pickerview.view.WheelOptions
 
 /**
  * <p>文件描述：<p>
@@ -27,7 +26,7 @@ class OptionsPickerView<T>(pickerOptions: PickerOptions) : BasePickerView(picker
     private val TAG_SUBMIT = "submit"
     private val TAG_CANCEL = "cancel"
 
-    private lateinit var wheelOptions: WheelOptions<T>
+    private lateinit var wheelOptions: CustomWheelOptions<T>
 
     init {
         mPickerOptions = pickerOptions
@@ -87,10 +86,8 @@ class OptionsPickerView<T>(pickerOptions: PickerOptions) : BasePickerView(picker
         val optionsPicker = findViewById(R.id.optionspicker) as LinearLayout
         optionsPicker.setBackgroundColor(mPickerOptions.bgColorWheel)
 
-        wheelOptions = WheelOptions(optionsPicker, mPickerOptions.isRestoreItem)
-        if (mPickerOptions.optionsSelectChangeListener != null) {
-            wheelOptions.setOptionsSelectChangeListener(mPickerOptions.optionsSelectChangeListener)
-        }
+        wheelOptions = CustomWheelOptions(optionsPicker, mPickerOptions.isRestoreItem)
+        wheelOptions.optionsSelectChangeListener = mPickerOptions.optionsSelectChangeListener
 
         wheelOptions.setTextContentSize(mPickerOptions.textSizeContent)
         wheelOptions.setLabels(mPickerOptions.label1, mPickerOptions.label2, mPickerOptions.label3)
@@ -99,7 +96,7 @@ class OptionsPickerView<T>(pickerOptions: PickerOptions) : BasePickerView(picker
             mPickerOptions.x_offset_two,
             mPickerOptions.x_offset_three
         )
-        wheelOptions.setCyclic(mPickerOptions.cyclic1, mPickerOptions.cyclic2, mPickerOptions.cyclic3)
+        wheelOptions.setCyclic(true)
         wheelOptions.setTypeface(mPickerOptions.font)
 
         setOutSideCancelable(mPickerOptions.cancelable)
@@ -109,8 +106,8 @@ class OptionsPickerView<T>(pickerOptions: PickerOptions) : BasePickerView(picker
         wheelOptions.setLineSpacingMultiplier(mPickerOptions.lineSpacingMultiplier)
         wheelOptions.setTextColorOut(mPickerOptions.textColorOut)
         wheelOptions.setTextColorCenter(mPickerOptions.textColorCenter)
-        wheelOptions.isCenterLabel(mPickerOptions.isCenterLabel)
     }
+
     /**
      * 动态设置标题
      *
@@ -148,9 +145,7 @@ class OptionsPickerView<T>(pickerOptions: PickerOptions) : BasePickerView(picker
     }
 
     private fun reSetCurrentItems() {
-        if (wheelOptions != null) {
-            wheelOptions.setCurrentItems(mPickerOptions.option1, mPickerOptions.option2, mPickerOptions.option3)
-        }
+        wheelOptions.setCurrentItems(mPickerOptions.option1, mPickerOptions.option2, mPickerOptions.option3)
     }
 
     fun setPicker(optionsItems: List<T>) {
@@ -167,7 +162,7 @@ class OptionsPickerView<T>(pickerOptions: PickerOptions) : BasePickerView(picker
         options3Items: List<List<List<T>>>?
     ) {
 
-        wheelOptions.setPicker(options1Items, options2Items, options3Items)
+        wheelOptions.setPicker(options1Items.toMutableList())
         reSetCurrentItems()
     }
 
@@ -179,8 +174,6 @@ class OptionsPickerView<T>(pickerOptions: PickerOptions) : BasePickerView(picker
         options3Items: List<T>
     ) {
 
-        wheelOptions.setLinkage(false)
-        wheelOptions.setNPicker(options1Items, options2Items, options3Items)
         reSetCurrentItems()
     }
 
@@ -199,7 +192,7 @@ class OptionsPickerView<T>(pickerOptions: PickerOptions) : BasePickerView(picker
     //抽离接口回调的方法
     fun returnData() {
         if (mPickerOptions.optionsSelectListener != null) {
-            val optionsCurrentItems = wheelOptions.currentItems
+            val optionsCurrentItems = wheelOptions.getCurrentItems()
             mPickerOptions.optionsSelectListener.onOptionsSelect(
                 optionsCurrentItems[0],
                 optionsCurrentItems[1],

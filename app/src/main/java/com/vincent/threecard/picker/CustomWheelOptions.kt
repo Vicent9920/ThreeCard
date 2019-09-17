@@ -52,36 +52,45 @@ class CustomWheelOptions<T>(public var view:View, public var isRestoreItem:Boole
         wv_option1.currentItem = 0// 初始化时显示的数据
 
         mOptions2Items.addAll(options1Items)
-        options1Items.removeAt(0)
+        mOptions2Items.removeAt(0)
         wv_option2.adapter = ArrayWheelAdapter(mOptions2Items)// 设置显示数据
-        wv_option2.setCurrentItem(wv_option2.getCurrentItem());// 初始化时显示的数据
+        wv_option2.currentItem = wv_option2.currentItem;// 初始化时显示的数据
 
         // 选项3
         mOptions3Items.addAll(options1Items)
-        options1Items.removeAt(1)
+        mOptions3Items.removeAt(0)
+        mOptions3Items.removeAt(0)
         wv_option3.adapter = ArrayWheelAdapter(mOptions3Items)// 设置显示数据
-        wv_option3.setCurrentItem(wv_option3.getCurrentItem())
+        wv_option3.currentItem = wv_option3.currentItem
 
         wv_option1.setIsOptions(true)
         wv_option2.setIsOptions(true)
         wv_option3.setIsOptions(true)
 
         wheelListener_option1 = OnItemSelectedListener { index ->
+            mOptions2Items.clear()
             mOptions2Items.addAll(mOptions1Items)
             mOptions2Items.removeAt(index)
             wv_option2.adapter = ArrayWheelAdapter(mOptions2Items)
             wv_option2.currentItem = 0
-
             wheelListener_option2.onItemSelected(0)
+            mOptions3Items.clear()
+            mOptions3Items.addAll(mOptions1Items)
+            mOptions3Items.removeAt(index)
+            mOptions3Items.remove(mOptions2Items[0])
+            wv_option3.adapter = ArrayWheelAdapter(mOptions3Items)
+            wv_option3.currentItem = 0
         }
 
         wheelListener_option2 = OnItemSelectedListener { index ->
+            mOptions3Items.clear()
             mOptions3Items.addAll(mOptions1Items)
+            mOptions3Items.remove(mOptions1Items[wv_option1.currentItem])
             mOptions3Items.removeAt(index)
             wv_option3.adapter = ArrayWheelAdapter(mOptions3Items)
             wv_option3.currentItem = 0
 
-            wheelListener_option2.onItemSelected(0)
+//            wheelListener_option2.onItemSelected(0)
 
             //3级联动数据实时回调
             optionsSelectChangeListener?.onOptionsSelectChanged(wv_option1.currentItem, index, 0)
@@ -237,5 +246,46 @@ class CustomWheelOptions<T>(public var view:View, public var isRestoreItem:Boole
         this.textColorCenter = textColorCenter
         setTextColorCenter()
     }
+
+    /**
+     * 返回当前选中的结果对应的位置数组 因为支持三级联动效果，分三个级别索引，0，1，2。
+     * 在快速滑动未停止时，点击确定按钮，会进行判断，如果匹配数据越界，则设为0，防止index出错导致崩溃。
+     *
+     * @return 索引数组
+     */
+    fun getCurrentItems(): IntArray {
+        val currentItems = IntArray(3)
+        currentItems[0] = wv_option1.currentItem
+
+        currentItems[1] = wv_option2.currentItem
+
+        currentItems[2] = wv_option3.currentItem
+
+        return currentItems
+    }
+
+    fun setCurrentItems(option1: Int, option2: Int, option3: Int) {
+        if (linkage) {
+            itemSelected(option1, option2, option3)
+        } else {
+            wv_option1.currentItem = option1
+            wv_option2.currentItem = option2
+            wv_option3.currentItem = option3
+        }
+    }
+    private fun itemSelected(opt1Select: Int, opt2Select: Int, opt3Select: Int) {
+        wv_option1.currentItem = opt1Select
+        mOptions2Items.clear()
+        mOptions2Items.addAll(mOptions1Items)
+        val item = mOptions2Items.removeAt(opt1Select)
+        wv_option2.adapter = ArrayWheelAdapter(mOptions2Items)
+        wv_option2.currentItem = opt2Select
+        mOptions3Items.clear()
+        mOptions3Items.addAll(mOptions1Items)
+        mOptions3Items.remove(item)
+        wv_option3.adapter = ArrayWheelAdapter(mOptions3Items)
+        wv_option3.currentItem = opt3Select
+    }
+
 
 }

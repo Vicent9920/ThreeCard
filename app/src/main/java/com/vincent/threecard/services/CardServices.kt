@@ -3,6 +3,7 @@ package com.vincent.threecard.services
 import android.app.IntentService
 import android.content.Intent
 import android.preference.PreferenceManager
+import android.util.Log
 import androidx.core.content.edit
 import com.vincent.threecard.dao.Card
 import com.vincent.threecard.dao.CardType
@@ -21,10 +22,12 @@ class CardServices:IntentService("CardServices") {
     override fun onHandleIntent(intent: Intent?) {
         val cards = calculateCardType()
         for ((index,card) in cards.withIndex()){
-            card.level = index
+            card.number = index
+            card.max = card.getMax()
+            card.type = card.getType()
             card.save()
         }
-
+        Log.e("TAG","数据库实例完毕")
         PreferenceManager.getDefaultSharedPreferences(this).edit {
             putBoolean(init,true)
         }
