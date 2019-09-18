@@ -88,7 +88,7 @@ class MainActivity : AppCompatActivity() {
                 .show()
             progressDialog.setCancelable(false)
             progressDialog.setCanceledOnTouchOutside(false)
-
+            handler.sendEmptyMessage(100)
         }
         for (i in 1..52) {
             cards.add(makeCard(i))
