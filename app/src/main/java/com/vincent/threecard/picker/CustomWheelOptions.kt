@@ -16,10 +16,10 @@ import com.contrarywind.view.WheelView
  * <p>版本号：1<p>
  *
  */
-class CustomWheelOptions<T>(public var view:View, public var isRestoreItem:Boolean) {
-    private  var wv_option1: WheelView
-    private  var wv_option2: WheelView
-    private  var wv_option3: WheelView
+class CustomWheelOptions<T>( var view:View,  var isRestoreItem:Boolean) {
+    private  val wv_option1: WheelView = view.findViewById(R.id.options1)
+    private  val wv_option2: WheelView = view.findViewById(R.id.options2)
+    private  val wv_option3: WheelView = view.findViewById(R.id.options3)
     private  var mOptions1Items:MutableList<T> = mutableListOf()
     private  var mOptions2Items:MutableList<T> = mutableListOf()
     private  var mOptions3Items:MutableList<T> = mutableListOf()
@@ -39,11 +39,6 @@ class CustomWheelOptions<T>(public var view:View, public var isRestoreItem:Boole
     private lateinit var wheelListener_option2: OnItemSelectedListener
 
       var optionsSelectChangeListener: OnOptionsSelectChangeListener? = null
-    init {
-        wv_option1 = view.findViewById(R.id.options1)
-        wv_option2 = view.findViewById(R.id.options2)
-        wv_option3 = view.findViewById(R.id.options3)
-    }
 
     fun setPicker(options1Items:MutableList<T>){
         this.mOptions1Items.addAll(options1Items)
@@ -54,7 +49,7 @@ class CustomWheelOptions<T>(public var view:View, public var isRestoreItem:Boole
         mOptions2Items.addAll(options1Items)
         mOptions2Items.removeAt(0)
         wv_option2.adapter = ArrayWheelAdapter(mOptions2Items)// 设置显示数据
-        wv_option2.currentItem = wv_option2.currentItem;// 初始化时显示的数据
+        wv_option2.currentItem = wv_option2.currentItem// 初始化时显示的数据
 
         // 选项3
         mOptions3Items.addAll(options1Items)
@@ -68,7 +63,7 @@ class CustomWheelOptions<T>(public var view:View, public var isRestoreItem:Boole
         wv_option3.setIsOptions(true)
 
         wheelListener_option1 = OnItemSelectedListener { index ->
-            mOptions2Items.clear()
+            this.mOptions2Items.clear()
             mOptions2Items.addAll(mOptions1Items)
             mOptions2Items.removeAt(index)
             wv_option2.adapter = ArrayWheelAdapter(mOptions2Items)
@@ -83,7 +78,7 @@ class CustomWheelOptions<T>(public var view:View, public var isRestoreItem:Boole
         }
 
         wheelListener_option2 = OnItemSelectedListener { index ->
-            mOptions3Items.clear()
+            this.mOptions3Items.clear()
             mOptions3Items.addAll(mOptions1Items)
             mOptions3Items.remove(mOptions1Items[wv_option1.currentItem])
             mOptions3Items.removeAt(index)
@@ -277,12 +272,13 @@ class CustomWheelOptions<T>(public var view:View, public var isRestoreItem:Boole
         wv_option1.currentItem = opt1Select
         mOptions2Items.clear()
         mOptions2Items.addAll(mOptions1Items)
-        val item = mOptions2Items.removeAt(opt1Select)
+        mOptions2Items.removeAt(opt1Select)
         wv_option2.adapter = ArrayWheelAdapter(mOptions2Items)
         wv_option2.currentItem = opt2Select
         mOptions3Items.clear()
         mOptions3Items.addAll(mOptions1Items)
-        mOptions3Items.remove(item)
+        mOptions3Items.remove(mOptions1Items[opt1Select])
+        mOptions3Items.remove(mOptions2Items[opt2Select])
         wv_option3.adapter = ArrayWheelAdapter(mOptions3Items)
         wv_option3.currentItem = opt3Select
     }

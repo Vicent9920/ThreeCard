@@ -1,107 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/main_bg"
-    tools:context=".MainActivity">
+                                                   xmlns:app="http://schemas.android.com/apk/res-auto"
+                                                   xmlns:tools="http://schemas.android.com/tools"
+                                                   android:layout_width="match_parent"
+                                                   android:layout_height="match_parent"
+                                                   android:background="@drawable/main_bg"
+                                                   tools:context=".MainActivity">
 
     <TextView
-        android:id="@+id/tv_choose"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:background="#99000000"
-        android:padding="8dp"
-        android:text="选择扑克牌"
-        android:textColor="#1296db"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.95"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
+            android:id="@+id/tv_choose"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:background="#99000000"
+            android:padding="8dp"
+            android:text="选择扑克牌"
+            android:textColor="#1296db"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.95"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0"/>
 
     <TextView
-        android:id="@+id/tv_random"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="14dp"
-        android:background="#dd000000"
-        android:padding="8dp"
-        android:text="随机选择"
-        android:textColor="#8BC34A"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="@+id/tv_choose"
-        app:layout_constraintTop_toBottomOf="@+id/tv_choose" />
+            android:id="@+id/tv_random"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:background="#dd000000"
+            android:padding="8dp"
+            android:text="随机选择"
+            android:textColor="#8BC34A"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="@+id/tv_choose"
+            app:layout_constraintTop_toBottomOf="@+id/tv_choose"/>
 
     <TextView
-        android:id="@+id/tv_clean"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="14dp"
-        android:background="#dd000000"
-        android:padding="8dp"
-        android:text="清除牌型"
-        android:textColor="#FFEB3B"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="@+id/tv_random"
-        app:layout_constraintTop_toBottomOf="@+id/tv_random" />
+            android:id="@+id/tv_clean"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:background="#dd000000"
+            android:padding="8dp"
+            android:text="清除牌型"
+            android:textColor="#FFEB3B"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="@+id/tv_random"
+            app:layout_constraintTop_toBottomOf="@+id/tv_random"/>
 
-    <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="12dp"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toTopOf="@+id/tv_result"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
 
-        <ImageView
+    <ImageView
             android:id="@+id/iv_first"
             android:layout_width="56dp"
             android:layout_height="56dp"
-            android:src="@mipmap/default_card" />
+            android:src="@mipmap/default_card"
+            app:layout_constraintTop_toTopOf="@+id/iv_second" app:layout_constraintBottom_toBottomOf="@+id/iv_second"
+            app:layout_constraintEnd_toStartOf="@+id/iv_second" android:layout_marginEnd="12dp"/>
 
-        <View
-            android:layout_width="12dp"
-            android:layout_height="1px" />
 
-        <ImageView
+    <ImageView
             android:id="@+id/iv_second"
             android:layout_width="56dp"
             android:layout_height="56dp"
-            android:src="@mipmap/default_card" />
+            android:layout_marginBottom="12dp"
+            android:src="@mipmap/default_card"
+            app:layout_constraintBottom_toTopOf="@+id/tv_result"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
 
-        <View
-            android:layout_width="12dp"
-            android:layout_height="1px" />
 
-        <ImageView
+    <ImageView
             android:id="@+id/iv_third"
             android:layout_width="56dp"
             android:layout_height="56dp"
-            android:src="@mipmap/default_card" />
+            android:src="@mipmap/default_card"
+            app:layout_constraintBottom_toBottomOf="@+id/iv_second" app:layout_constraintStart_toEndOf="@+id/iv_second"
+            android:layout_marginStart="12dp"/>
 
-    </LinearLayout>
 
     <TextView
-        android:id="@+id/tv_result"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="#cc000000"
-        android:gravity="center"
-        android:padding="6dp"
-        android:text="在牌型中排位是 \n得胜率为 "
-        android:textColor="#ffffff"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+            android:id="@+id/tv_result"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#cc000000"
+            android:gravity="center"
+            android:padding="6dp"
+            android:text="在牌型中排位是 \n得胜率为 "
+            android:textColor="#ffffff"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,10 +2,14 @@ package com.vincent.threecard
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
 import android.preference.PreferenceManager
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -27,8 +31,27 @@ class MainActivity : AppCompatActivity() {
 
     private val cards = mutableListOf<String>()
 
-    private lateinit var handler:Handler
-    private lateinit var progressDialog: AlertDialog
+    private val handler: Handler by lazy {
+        @SuppressLint("HandlerLeak")
+        object : Handler() {
+            override fun handleMessage(msg: Message?) {
+                super.handleMessage(msg)
+                val result = PreferenceManager.getDefaultSharedPreferences(application).getBoolean(init, false)
+                if (result) {
+                    progressDialog.dismiss()
+                } else {
+                    sendEmptyMessage(100)
+                }
+            }
+        }
+    }
+    private val progressDialog: AlertDialog by lazy {
+        AlertDialog.Builder(this, R.style.NoBackGroundDialog)
+            .setView(R.layout.dialog_layout)
+            .setCancelable(false)
+            .create()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -38,6 +61,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    @SuppressLint("SetTextI18n")
     private fun initEvent() {
         tv_choose.setOnClickListener {
             chooseCard()
@@ -53,7 +77,7 @@ class MainActivity : AppCompatActivity() {
             while (a == c || b == c) {
                 c = (1..Total).random()
             }
-            Log.e("TAG","a:$a  b:$b  c:$c")
+            Log.e("TAG", "a:$a  b:$b  c:$c")
             iv_first.setImageResource(getImgRes(a))
             iv_second.setImageResource(getImgRes(b))
             iv_third.setImageResource(getImgRes(c))
@@ -65,29 +89,16 @@ class MainActivity : AppCompatActivity() {
             iv_third.setImageResource(getImgRes(0))
             tv_result.text = "在牌型中排位是 \n得胜率为 "
         }
-        handler = @SuppressLint("HandlerLeak")
-        object :Handler(){
-            override fun handleMessage(msg: Message?) {
-                super.handleMessage(msg)
-                val result = PreferenceManager.getDefaultSharedPreferences(application).getBoolean(init, false)
-                if(result){
-                    progressDialog.dismiss()
-                }else{
-                    sendEmptyMessage(100)
-                }
-            }
-        }
+
+
     }
 
     private fun initData() {
         val isInit = PreferenceManager.getDefaultSharedPreferences(application).getBoolean(init, false)
         if (!isInit) {
             startService(Intent(this, CardServices::class.java))
-            progressDialog = AlertDialog.Builder(this,R.style.NoBackGroundDialog)
-                .setView(R.layout.dialog_layout)
-                .show()
-            progressDialog.setCancelable(false)
             progressDialog.setCanceledOnTouchOutside(false)
+            progressDialog.show()
             handler.sendEmptyMessage(100)
         }
         for (i in 1..52) {
@@ -123,7 +134,7 @@ class MainActivity : AppCompatActivity() {
     private fun chooseCard() {
 
         if (!PreferenceManager.getDefaultSharedPreferences(application).getBoolean(init, false)) {
-            Toast.makeText(this, "数据正在实例化，请稍候！", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "数据正在初始化，请稍候！", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -146,14 +157,19 @@ class MainActivity : AppCompatActivity() {
     /**
      * 计算牌型概率
      */
+    @SuppressLint("SetTextI18n")
     private fun calculateProbability(card: CardType) {
         val result =
             LitePal.where("type = ? and max = ?", card.getType().toString(), card.getMax().toString()).find<CardType>()
         for (item in result) {
             if (card.getTotalCard() == item.getTotalCard()) {
-                tv_result.text =
-                    "在牌型中排位是${item.number}\n得胜率为${String.format("%.2f", item.number.toFloat() / 22100 * 100)}% "
-                break
+                val text = "在牌型中排位是${item.number}\n得胜率为${String.format("%.2f", item.number.toFloat() / 22100 * 100)}%"
+                val span = SpannableString(text)
+                val startIndex = text.indexOf(item.number.toString())
+                span.setSpan(ForegroundColorSpan(Color.RED),startIndex,startIndex+item.number.toString().length, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
+                span.setSpan(ForegroundColorSpan(Color.RED),text.indexOf("为")+1,text.length, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
+                tv_result.text = span
+                return
             }
         }
     }

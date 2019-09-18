@@ -454,3 +454,5 @@ data class CardType(
 
 ## 体验地址
 ![](./down.png)
+
+`App`名称叫`ThreeCard`，因为炸金花每个人三张牌，因此直接取名三张牌了！是不是很随意啊？
