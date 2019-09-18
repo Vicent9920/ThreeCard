@@ -1,5 +1,6 @@
 package com.vincent.threecard
 
+import com.vincent.threecard.services.Total
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -12,6 +13,9 @@ import org.junit.Assert.*
 class ExampleUnitTest {
     @Test
     fun addition_isCorrect() {
-        assertEquals(4, 2 + 2)
+        for(i in 1..200){
+            println((1..Total).random())
+        }
+
     }
 }

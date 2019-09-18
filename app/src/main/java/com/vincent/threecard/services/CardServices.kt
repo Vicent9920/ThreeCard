@@ -28,7 +28,7 @@ class CardServices:IntentService("CardServices") {
             card.save()
         }
         Log.e("TAG","数据库实例完毕")
-        PreferenceManager.getDefaultSharedPreferences(this).edit {
+        PreferenceManager.getDefaultSharedPreferences(application).edit {
             putBoolean(init,true)
         }
     }

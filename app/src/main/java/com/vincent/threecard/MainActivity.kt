@@ -1,8 +1,12 @@
 package com.vincent.threecard
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Message
 import android.preference.PreferenceManager
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.bigkoo.pickerview.configure.PickerOptions
@@ -16,12 +20,15 @@ import com.vincent.threecard.services.init
 import kotlinx.android.synthetic.main.activity_main.*
 import org.litepal.LitePal
 import org.litepal.extension.find
+import androidx.appcompat.app.AlertDialog
 
 
 class MainActivity : AppCompatActivity() {
 
     private val cards = mutableListOf<String>()
 
+    private lateinit var handler:Handler
+    private lateinit var progressDialog: AlertDialog
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -46,6 +53,7 @@ class MainActivity : AppCompatActivity() {
             while (a == c || b == c) {
                 c = (1..Total).random()
             }
+            Log.e("TAG","a:$a  b:$b  c:$c")
             iv_first.setImageResource(getImgRes(a))
             iv_second.setImageResource(getImgRes(b))
             iv_third.setImageResource(getImgRes(c))
@@ -57,12 +65,30 @@ class MainActivity : AppCompatActivity() {
             iv_third.setImageResource(getImgRes(0))
             tv_result.text = "在牌型中排位是 \n得胜率为 "
         }
+        handler = @SuppressLint("HandlerLeak")
+        object :Handler(){
+            override fun handleMessage(msg: Message?) {
+                super.handleMessage(msg)
+                val result = PreferenceManager.getDefaultSharedPreferences(application).getBoolean(init, false)
+                if(result){
+                    progressDialog.dismiss()
+                }else{
+                    sendEmptyMessage(100)
+                }
+            }
+        }
     }
 
     private fun initData() {
-        val isInit = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(init, false)
+        val isInit = PreferenceManager.getDefaultSharedPreferences(application).getBoolean(init, false)
         if (!isInit) {
             startService(Intent(this, CardServices::class.java))
+            progressDialog = AlertDialog.Builder(this,R.style.NoBackGroundDialog)
+                .setView(R.layout.dialog_layout)
+                .show()
+            progressDialog.setCancelable(false)
+            progressDialog.setCanceledOnTouchOutside(false)
+
         }
         for (i in 1..52) {
             cards.add(makeCard(i))
@@ -96,7 +122,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun chooseCard() {
 
-        if (!PreferenceManager.getDefaultSharedPreferences(this).getBoolean(init, false)) {
+        if (!PreferenceManager.getDefaultSharedPreferences(application).getBoolean(init, false)) {
             Toast.makeText(this, "数据正在实例化，请稍候！", Toast.LENGTH_SHORT).show()
             return
         }
@@ -159,7 +185,7 @@ class MainActivity : AppCompatActivity() {
             38 -> R.mipmap.card_3_9
             42 -> R.mipmap.card_3_10
             46 -> R.mipmap.card_3_11
-            52 -> R.mipmap.card_3_12
+            50 -> R.mipmap.card_3_12
             3 -> R.mipmap.card_0_0
             7 -> R.mipmap.card_0_1
             11 -> R.mipmap.card_0_2
