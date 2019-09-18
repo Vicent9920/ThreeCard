@@ -2,6 +2,7 @@ package com.vincent.threecard.dao
 
 import com.vincent.threecard.services.Total
 import org.litepal.crud.LitePalSupport
+import kotlin.math.abs
 
 /**
  * <p>文件描述：牌型实体<p>
@@ -66,16 +67,13 @@ data class CardType(
 
     // 判断是否是顺子（如2,3,4）
     private fun isConstant(): Boolean {
-        var result = false
         val a1 = getCardValue(a)
         val b1 = getCardValue(b)
         val c1 = getCardValue(c)
-        when {
-            getTotalCard() == 3 * a1 && Math.abs(b1 - c1) == 2 -> result = true
-            getTotalCard() == 3 * b1 && Math.abs(a1 - c1) == 2 -> result = true
-            getTotalCard() == 3 * c1 && Math.abs(a1 - b1) == 2 -> result = true
-        }
-        return result
+        return ((getTotalCard() == 3 * a1 && abs(b1 - c1)==2)
+                ||(getTotalCard() == 3 * b1 && abs(a1 - c1) == 2)
+                ||(getTotalCard() == 3 * c1 && abs(a1 - b1) == 2))
+
     }
 
     /**
@@ -133,8 +131,8 @@ data class CardType(
      */
     fun getPairNumber(): Int {
         return when {
-            a / 4 == b / 4 -> a
-            a / 4 == c / 4 -> a
+            getCardValue(a) == getCardValue(b) -> a
+            getCardValue(a) == getCardValue(c) -> a
             else -> c
         }
 
@@ -145,8 +143,8 @@ data class CardType(
      */
     fun getNotPairNumberWithPair(): Int {
         return when {
-            a / 4 == b / 4 -> c
-            a / 4 == c / 4 -> b
+            getCardValue(a) == getCardValue(b) -> c
+            getCardValue(a) == getCardValue(c) -> b
             else -> a
         }
     }

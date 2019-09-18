@@ -1,5 +1,6 @@
 # 观炸金花有感
 首先祝各位中秋节快乐！总有人说我们四川人耍就是打麻将，四川人出去耍就是换个地方打麻将，其实我们四川人除了麻将还有斗地主和炸金花，而前两天在观看朋友炸金花以后，我就发现一个特别有趣的事情，`52`张牌，在炸金花过程中如果通过算法来分析一下，应该有一些不同的收获。
+
 接下来我就带大家一起来看看，能不能把自己手上的牌进行科学化的分析，看看在组合中自己的牌到底算不算大？此处默认炸金花的游戏规则大家都知道（不知道的请自行百度了解 [炸金花介绍](https://baike.baidu.com/item/%E7%82%B8%E9%87%91%E8%8A%B1/8806924?fr=aladdin)）
 
 ## 牌型
@@ -39,9 +40,6 @@
                         if(j>i){
                             if(k>j){
                                 result.add(CardType(i, j, k))
-                                if(i == 5 && j == 9){
-                                    println(result.last().toString())
-                                }
                             }
                         }
 
@@ -106,27 +104,39 @@
 既然我们知道了牌型里面一共有`22100`个牌型，那么能不能对所有牌型按照从小到大来进行一个排序呢？比如你炸金花的时候，打算弃牌的时候，就可以科学的分析一下当前这手牌满分100分的话，应该可以打多少分，给自己一个科学的依据，那么我们开始吧！
 
 ### 规则说明
-在计算牌型大小之前，我们还得对`52`张牌进行一个代码上面的转化，`1~52`代表一副去掉大小王的牌,其中`1~4`代表`A`,`5-8`代表`2`,依次类推，`49~52`代表`K`,然后为了对牌型的大小进行比较，因此我们对每个花色也进行了量化，我们根据“红黑梅芳”的规则来进行统计，比如`49~52`分别代表方块`K`(`49`)、梅花`K`(`50`)、黑桃`K`(`51`)、红桃`K`(`52`)。最后一点,由于`A`是单张牌里面最大的，因此在牌型`CardType`这个对象里面，把`1~4`给修改为了`53~56`,方便最后进行计算。
+在计算牌型大小之前，我们还得对`52`张牌进行一个代码上面的转化，`1~52`代表一副去掉大小王的牌,其中`1~4`代表`A`,`5-8`代表`2`,依次类推，`49~52`代表`K`,然后为了对牌型的大小进行比较，因此我们对每个花色也进行了量化，我们根据“红黑梅方”的规则来进行统计，比如`49~52`分别代表方块`K`(`49`)、梅花`K`(`50`)、黑桃`K`(`51`)、红桃`K`(`52`)。最后一点,由于`A`是单张牌里面最大的，因此在牌型`CardType`这个对象里面，把`1~4`给修改为了`53~56`,方便最后进行计算。
 
 ### 牌型封装
 由于炸金花都是每人`3`张牌，因此我们把`3`张牌称为一手牌，然后把一手牌的类型等属性进行了封装，先看看一手牌对象`CardType`的代码：
 
 ```
 /**
- * 牌型
+ * <p>文件描述：牌型实体<p>
+ * <p>@author 烤鱼<p>
+ * <p>@date 2019/9/16 0016 <p>
+ * <p>@update 2019/9/16 0016<p>
+ * <p>版本号：1.0<p>
+ *
  */
-data class CardType(var a: Int, var b: Int, var c: Int, var level: Int? = 0) {
+
+data class CardType(
+    var a: Int, var b: Int, var c: Int, var type: Int? = 1,
+    var max: Int? = 2, var number: Int = 0
+) : LitePalSupport() {
+    @Transient
+    val id = 0
+
 
     // 将 1 换算为 A ，为目前的最大值
     init {
-        a = if (a < 5) a + 52 else a
-        b = if (b < 5) b + 52 else b
-        c = if (c < 5) c + 52 else c
+        a = if (a < 5) a + Total else a
+        b = if (b < 5) b + Total else b
+        c = if (c < 5) c + Total else c
     }
 
     /**
      * 获取牌的类型
-     * 6 豹子
+     * 6 炸弹
      * 5 顺金
      * 4 金花
      * 3 顺子
@@ -139,7 +149,7 @@ data class CardType(var a: Int, var b: Int, var c: Int, var level: Int? = 0) {
         val b1 = getCardValue(b)
         val c1 = getCardValue(c)
         return when {
-            a1 == b1 && b1 == c1 -> 6 // 豹子 三张牌大小一样
+            a1 == b1 && b1 == c1 -> 6 // 炸弹 三张牌大小一样
             (a % 4 == b % 4 && b % 4 == c % 4) && isConstant() -> 5 // 金花+顺子 花色必须一样且大小必须有连续性
             a % 4 == b % 4 && b % 4 == c % 4 -> 4 // 金花 牌的大小必须一样
             isConstant() -> 3 // 连子 牌的大小具有连续性 如2,3,4
@@ -163,16 +173,13 @@ data class CardType(var a: Int, var b: Int, var c: Int, var level: Int? = 0) {
 
     // 判断是否是顺子（如2,3,4）
     private fun isConstant(): Boolean {
-        var result = false
         val a1 = getCardValue(a)
         val b1 = getCardValue(b)
         val c1 = getCardValue(c)
-        when {
-            getTotalCard() == 3 * a1 && abs(b1 - c1) == 2 -> result = true
-            getTotalCard() == 3 * b1 && abs(a1 - c1) == 2 -> result = true
-            getTotalCard() == 3 * c1 && abs(a1 - b1) == 2 -> result = true
-        }
-        return result
+        return ((getTotalCard() == 3 * a1 && abs(b1 - c1)==2)
+                ||(getTotalCard() == 3 * b1 && abs(a1 - c1) == 2)
+                ||(getTotalCard() == 3 * c1 && abs(a1 - b1) == 2))
+
     }
 
     /**
@@ -230,8 +237,8 @@ data class CardType(var a: Int, var b: Int, var c: Int, var level: Int? = 0) {
      */
     fun getPairNumber(): Int {
         return when {
-            a / 4 == b / 4 -> a
-            a / 4 == c / 4 -> a
+            getCardValue(a) == getCardValue(b) -> a
+            getCardValue(a) == getCardValue(c) -> a
             else -> c
         }
 
@@ -242,8 +249,8 @@ data class CardType(var a: Int, var b: Int, var c: Int, var level: Int? = 0) {
      */
     fun getNotPairNumberWithPair(): Int {
         return when {
-            a / 4 == b / 4 -> c
-            a / 4 == c / 4 -> b
+            getCardValue(a) == getCardValue(b) -> c
+            getCardValue(a) == getCardValue(c) -> b
             else -> a
         }
     }
@@ -260,7 +267,7 @@ data class CardType(var a: Int, var b: Int, var c: Int, var level: Int? = 0) {
      * 计算牌型的总牌值
      * 与<link getTotal()>的区别在于上面计算考虑花型，此处不考虑花型
      */
-    private fun getTotalCard(): Int {
+    fun getTotalCard(): Int {
         val a1 = getCardValue(a)
         val b1 = getCardValue(b)
         val c1 = getCardValue(c)
@@ -268,7 +275,24 @@ data class CardType(var a: Int, var b: Int, var c: Int, var level: Int? = 0) {
     }
 
     override fun toString(): String {
-        return "a--$a  b--$b  c--$c"
+        return "a--${getCardName(a)}  b--${getCardName(b)}  c--${getCardName(c)}"
+    }
+
+    private fun getCardName(value: Int): String {
+        val number = when (val cardValue = getCardValue(value)) {
+            14 -> "A"
+            13 -> "K"
+            12 -> "Q"
+            11 -> "J"
+            else -> cardValue.toString()
+        }
+
+        return when (value % 4) {
+            3 -> "黑桃$number"
+            2 -> "梅花$number"
+            1 -> "方块$number"
+            else -> "红桃$number"
+        }
     }
 }
 ```
