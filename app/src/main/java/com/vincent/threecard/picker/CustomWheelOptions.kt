@@ -9,7 +9,7 @@ import com.contrarywind.listener.OnItemSelectedListener
 import com.contrarywind.view.WheelView
 
 /**
- * <p>文件描述：<p>
+ * <p>文件描述：自定义滚动View，重写的原因是无法提供默认三级列表数据 <p>
  * <p>@author 烤鱼<p>
  * <p>@date 2019/9/16 0016 <p>
  * <p>@update 2019/9/16 0016<p>
@@ -62,25 +62,32 @@ class CustomWheelOptions<T>( var view:View,  var isRestoreItem:Boolean) {
         wv_option2.setIsOptions(true)
         wv_option3.setIsOptions(true)
 
+        // 第一张扑克牌数据确认
         wheelListener_option1 = OnItemSelectedListener { index ->
             this.mOptions2Items.clear()
             mOptions2Items.addAll(mOptions1Items)
+            // 删除第一张扑克选中的牌，保证第二张扑克数据和第一张不一样
             mOptions2Items.removeAt(index)
             wv_option2.adapter = ArrayWheelAdapter(mOptions2Items)
             wv_option2.currentItem = 0
             wheelListener_option2.onItemSelected(0)
             mOptions3Items.clear()
             mOptions3Items.addAll(mOptions1Items)
+            // 删除第一张扑克选中的牌，保证第三张扑克数据和第一张不一样
             mOptions3Items.removeAt(index)
+            // 删除第二张扑克选中的牌，保证第三张扑克数据和第二张不一样
             mOptions3Items.remove(mOptions2Items[0])
             wv_option3.adapter = ArrayWheelAdapter(mOptions3Items)
             wv_option3.currentItem = 0
         }
 
+        // 第二张扑克牌确认
         wheelListener_option2 = OnItemSelectedListener { index ->
             this.mOptions3Items.clear()
             mOptions3Items.addAll(mOptions1Items)
+            // 删除第一张扑克选中的牌，保证第三张扑克数据和第一张不一样
             mOptions3Items.remove(mOptions1Items[wv_option1.currentItem])
+            // 删除第二张扑克选中的牌，保证第三张扑克数据和第二张不一样
             mOptions3Items.removeAt(index)
             wv_option3.adapter = ArrayWheelAdapter(mOptions3Items)
             wv_option3.currentItem = 0
@@ -268,16 +275,23 @@ class CustomWheelOptions<T>( var view:View,  var isRestoreItem:Boolean) {
             wv_option3.currentItem = option3
         }
     }
+
+    /**
+     * 当选中以后，需要对第二张扑克和第三张扑克数据进行处理
+     */
     private fun itemSelected(opt1Select: Int, opt2Select: Int, opt3Select: Int) {
         wv_option1.currentItem = opt1Select
         mOptions2Items.clear()
         mOptions2Items.addAll(mOptions1Items)
+        // 第一张扑克选择以后，第二张扑克数据需要进行修改，以保证第二张扑克数据和第一张不一样
         mOptions2Items.removeAt(opt1Select)
         wv_option2.adapter = ArrayWheelAdapter(mOptions2Items)
         wv_option2.currentItem = opt2Select
         mOptions3Items.clear()
         mOptions3Items.addAll(mOptions1Items)
+        // 第三张扑克数据需要进行修改，以保证第三张扑克数据和第一张不一样
         mOptions3Items.remove(mOptions1Items[opt1Select])
+        // 第三张扑克数据需要进行修改，以保证第三张扑克数据和第一张不一样
         mOptions3Items.remove(mOptions2Items[opt2Select])
         wv_option3.adapter = ArrayWheelAdapter(mOptions3Items)
         wv_option3.currentItem = opt3Select

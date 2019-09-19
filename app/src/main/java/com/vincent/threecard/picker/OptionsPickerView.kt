@@ -13,7 +13,7 @@ import com.bigkoo.pickerview.configure.PickerOptions
 import com.bigkoo.pickerview.view.BasePickerView
 
 /**
- * <p>文件描述：<p>
+ * <p>文件描述：选择框的View<p>
  * <p>@author 烤鱼<p>
  * <p>@date 2019/9/16 0016 <p>
  * <p>@update 2019/9/16 0016<p>

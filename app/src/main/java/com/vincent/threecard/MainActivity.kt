@@ -36,11 +36,14 @@ class MainActivity : AppCompatActivity() {
         object : Handler() {
             override fun handleMessage(msg: Message?) {
                 super.handleMessage(msg)
+                // 检查是否初始化完毕
                 val result = PreferenceManager.getDefaultSharedPreferences(application).getBoolean(init, false)
                 if (result) {
+                    // 关掉对话框
                     progressDialog.dismiss()
                 } else {
-                    sendEmptyMessage(100)
+                    // 下一秒钟继续检查初始化状态
+                    sendEmptyMessageDelayed(100,1000)
                 }
             }
         }
@@ -55,6 +58,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        // 设置状态栏透明
         StatusBarUtil.setTranslucent(this, 0x99)
         initData()
         initEvent()
@@ -63,30 +67,36 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("SetTextI18n")
     private fun initEvent() {
+
         tv_choose.setOnClickListener {
+            // 选择牌型
             chooseCard()
         }
         tv_random.setOnClickListener {
-
+             // 随机生成一手牌
             val a = (1..Total).random()
             var b = (1..Total).random()
+            // 52张牌当中不能有重复
             while (a == b) {
                 b = (1..Total).random()
             }
             var c = (1..Total).random()
+            // 52张牌当中不能有重复
             while (a == c || b == c) {
                 c = (1..Total).random()
             }
-            Log.e("TAG", "a:$a  b:$b  c:$c")
+            Log.d("TAG", "a:$a  b:$b  c:$c")
             iv_first.setImageResource(getImgRes(a))
             iv_second.setImageResource(getImgRes(b))
             iv_third.setImageResource(getImgRes(c))
+            // 计算概率
             calculateProbability(CardType(a, b, c))
         }
         tv_clean.setOnClickListener {
-            iv_first.setImageResource(getImgRes(0))
-            iv_second.setImageResource(getImgRes(0))
-            iv_third.setImageResource(getImgRes(0))
+            // 重置牌型
+            iv_first.setImageResource(R.mipmap.default_card)
+            iv_second.setImageResource(R.mipmap.default_card)
+            iv_third.setImageResource(R.mipmap.default_card)
             tv_result.text = "在牌型中排位是 \n得胜率为 "
         }
 
@@ -94,18 +104,24 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initData() {
+        // 判断牌型数据是否初始化
         val isInit = PreferenceManager.getDefaultSharedPreferences(application).getBoolean(init, false)
         if (!isInit) {
+            // 开启Services进行数据初始化
             startService(Intent(this, CardServices::class.java))
+            // 对话框点击外面不可关闭
             progressDialog.setCanceledOnTouchOutside(false)
             progressDialog.show()
-            handler.sendEmptyMessage(100)
+            // 一秒钟后检查牌型初始化是否结束
+            handler.sendEmptyMessageDelayed(100,1000)
         }
+        // 初始化52 张牌的数据
         for (i in 1..52) {
             cards.add(makeCard(i))
         }
     }
 
+    // 生成扑克牌
     private fun makeCard(i: Int): String {
         var number = if (i % 4 != 0) {
             i / 4 + 1
@@ -131,15 +147,19 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    /**
+     * 选择牌型
+     */
     private fun chooseCard() {
-
+        // 选择之前进行判断
         if (!PreferenceManager.getDefaultSharedPreferences(application).getBoolean(init, false)) {
             Toast.makeText(this, "数据正在初始化，请稍候！", Toast.LENGTH_SHORT).show()
             return
         }
-
+        // 设置选择类型为非时间类型
         val pickerOptions = PickerOptions(PickerOptions.TYPE_PICKER_OPTIONS)
         pickerOptions.context = this
+        // 确定选择数据
         pickerOptions.optionsSelectListener = OnOptionsSelectListener { options1, option2, options3, _ ->
 
             iv_first.setImageResource(getImgRes(options1 + 1))
