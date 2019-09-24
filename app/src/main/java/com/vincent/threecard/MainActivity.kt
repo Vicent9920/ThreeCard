@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.os.Message
 import android.preference.PreferenceManager
 import android.text.Spannable
@@ -62,7 +63,6 @@ class MainActivity : AppCompatActivity() {
         StatusBarUtil.setTranslucent(this, 0x99)
         initData()
         initEvent()
-
     }
 
     @SuppressLint("SetTextI18n")
@@ -251,4 +251,13 @@ class MainActivity : AppCompatActivity() {
             else -> R.mipmap.default_card
         }
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        handler?.removeMessages(100)
+    }
+
+
+
+
 }
